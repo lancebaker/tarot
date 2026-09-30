@@ -1728,6 +1728,15 @@
         }
 
         // Render card detail page
+        // Escape text for safe HTML insertion (fixes & breaking titles like "Choice & Eros")
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
         // Split long section text into readable paragraphs (content unchanged)
         function formatSectionHtml(text, options = {}) {
             if (!text) return '';
@@ -1739,23 +1748,37 @@
                     if (!trimmed) return '';
                     const m = trimmed.match(/^([^:]{2,40}):\s*([\s\S]+)$/);
                     if (m) {
-                        return `<p class="section-content spread-item"><strong>${m[1]}:</strong> ${m[2]}</p>`;
+                        return `<p class="section-content spread-item"><strong>${escapeHtml(m[1])}:</strong> ${escapeHtml(m[2])}</p>`;
                     }
-                    return `<p class="section-content spread-item">${trimmed}</p>`;
+                    return `<p class="section-content spread-item">${escapeHtml(trimmed)}</p>`;
                 }).join('');
             }
 
+            // Jungian subsections marked with Title:: body — parse without breaking on & or single words
             if (text.includes('::')) {
-                const chunks = text.split(/(?=[A-Z][^:]{2,60}::)/).map(s => s.trim()).filter(Boolean);
-                if (chunks.length > 1) {
-                    return chunks.map(chunk => {
-                        const m = chunk.match(/^([^:]+)::\s*([\s\S]+)$/);
-                        if (m) {
-                            const body = paragraphize(m[2].trim());
-                            return `<h4 class="section-subtitle">${m[1].trim()}</h4>${body}`;
-                        }
-                        return paragraphize(chunk);
-                    }).join('');
+                const blocks = [];
+                // Match "Title:: body" where title is a short heading (not a full sentence)
+                const re = /([A-Z][A-Za-z0-9 &,'\/\-]{0,70}?)::\s*/g;
+                let lastEnd = 0;
+                let match;
+                const markers = [];
+                while ((match = re.exec(text)) !== null) {
+                    markers.push({ title: match[1].trim(), start: match.index, end: match.index + match[0].length });
+                }
+                if (markers.length > 0) {
+                    // preamble before first title
+                    if (markers[0].start > 0) {
+                        const pre = text.slice(0, markers[0].start).trim();
+                        if (pre) blocks.push(paragraphize(pre));
+                    }
+                    for (let i = 0; i < markers.length; i++) {
+                        const bodyStart = markers[i].end;
+                        const bodyEnd = i + 1 < markers.length ? markers[i + 1].start : text.length;
+                        const body = text.slice(bodyStart, bodyEnd).trim();
+                        blocks.push(`<h4 class="section-subtitle">${escapeHtml(markers[i].title)}</h4>`);
+                        if (body) blocks.push(paragraphize(body));
+                    }
+                    return blocks.join('');
                 }
             }
 
@@ -1763,9 +1786,10 @@
         }
 
         function paragraphize(text) {
-            const sentences = text.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g);
+            const safe = escapeHtml(text.trim());
+            const sentences = safe.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g);
             if (!sentences || sentences.length <= 2) {
-                return `<p class="section-content">${text.trim()}</p>`;
+                return `<p class="section-content">${safe}</p>`;
             }
             const paras = [];
             for (let i = 0; i < sentences.length; i += 2) {
@@ -1842,7 +1866,7 @@
             return frame.positions.map(pos => `
                 <div class="position-card">
                     <h4>${pos.title}</h4>
-                    <p>${positionText(card, pos.role)}</p>
+                    <p>${escapeHtml(positionText(card, pos.role))}</p>
                 </div>
             `).join('');
         }
@@ -1858,13 +1882,13 @@
                 <div class="card-detail">
                     <div class="card-detail-header">
                         <div class="card-detail-number">${card.suit}${card.number ? ' — ' + card.number : ''}</div>
-                        <h2 class="card-detail-title">${card.name}</h2>
-                        <p class="card-detail-keywords">${card.keywords}</p>
+                        <h2 class="card-detail-title">${escapeHtml(card.name)}</h2>
+                        <p class="card-detail-keywords">${escapeHtml(card.keywords)}</p>
                     </div>
 
                     ${card.image ? `
                     <div class="card-image-section">
-                        <img src="${card.image}" alt="${card.name}" class="card-image-display" id="cardDetailImage">
+                        <img src="${card.image}" alt="${escapeHtml(card.name)}" class="card-image-display" id="cardDetailImage">
                     </div>
                     ` : ''}
 
