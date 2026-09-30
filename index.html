@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fretboard — Tarot Dictionary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --brown-dark: #3D2817;
+            --brown-light: #8B7355;
+            --cream: #D4C4B0;
+            --cream-light: #E8DFD3;
+            --gold: #A89968;
+            --gold-dark: #8B7355;
+            --sage: #5C6B4D;
+            --wood: #6B5344;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--cream-light) 0%, var(--cream) 100%);
+            color: var(--brown-dark);
+            line-height: 1.7;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(168, 153, 104, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(92, 107, 77, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--cream);
+            border-bottom: 3px solid var(--wood);
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: Georgia, serif;
+            font-size: 2rem;
+            color: var(--brown-dark);
+            margin-bottom: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h1::before {
+            content: '✦';
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        h1::after {
+            content: '✦';
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        .nav-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .dropdowns-row {
+            display: flex;
+            gap: 0.4rem;
+            width: 100%;
+        }
+
+        select {
+            padding: 0.6rem 0.7rem;
+            border: 2px solid var(--wood);
+            background-color: white;
+            color: var(--brown-dark);
+            font-family: inherit;
+            font-size: 0.9rem;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 0;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: inset 0 0 0 1px var(--gold), 0 0 0 3px rgba(168, 153, 104, 0.15);
+        }
+
+        .search-wrapper {
+            width: 100%;
+            position: relative;
+            margin-top: 0.5rem;
+        }
+
+        input[type="search"] {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 2px solid var(--wood);
+            background-color: white;
+            color: var(--brown-dark);
+            font-family: inherit;
+            font-size: 0.95rem;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        input[type="search"]:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: inset 0 0 0 1px var(--gold), 0 0 0 3px rgba(168, 153, 104, 0.15);
+        }
+
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .nav-container {
+                gap: 0.3rem;
+            }
+
+            select, input[type="search"] {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.7rem;
+            }
+
+            input[type="search"] {
+                min-width: 100%;
+                order: 5;
+            }
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        /* Search Autocomplete */
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--wood);
+            border-top: none;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+
+        .search-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--cream-light);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--cream-light);
+        }
+
+        .suggestion-name {
+            font-size: 0.95rem;
+            color: var(--brown-dark);
+            font-weight: 500;
+        }
+
+        .suggestion-suit {
+            font-size: 0.8rem;
+            color: var(--brown-light);
+            margin-left: 0.5rem;
+        }
+
+        /* Main Page Graphic */
+        .main-graphic {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            min-height: 400px;
+        }
+
+        .alchemical-circle {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+
+        @media (max-width: 640px) {
+            .main-graphic {
+                padding: 1rem;
+                min-height: 300px;
+            }
+
+            .alchemical-circle {
+                max-width: 350px;
+            }
+        }
+
+        /* Detail View */
+        .card-detail {
+            background: white;
+            border: 2px solid var(--wood);
+            padding: 2.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .card-image-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-light) 100%);
+            border: 2px solid var(--wood);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brown-light);
+            font-style: italic;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image-placeholder::before {
+            content: '☽';
+            position: absolute;
+            font-size: 4rem;
+            color: var(--gold);
+            opacity: 0.1;
+            top: -20px;
+            right: 20px;
+        }
+
+        .card-detail-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--cream-light);
+        }
+
+        .card-detail-title {
+            font-family: Georgia, serif;
+            font-size: 2.2rem;
+            color: var(--brown-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+            line-height: 1.2;
+        }
+
+        .card-detail-number {
+            font-size: 0.85rem;
+            color: var(--brown-light);
+            letter-spacing: 0.15em;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .card-detail-keywords {
+            font-size: 0.95rem;
+            color: var(--brown-light);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--cream-light);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-family: Georgia, serif;
+            font-size: 1.35rem;
+            color: var(--brown-dark);
+            margin-bottom: 1rem;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .section-title::before {
+            content: '✧';
+            color: var(--gold);
+            font-size: 1rem;
+        }
+
+        .section-content {
+            font-size: 0.95rem;
+            color: var(--brown-dark);
+            line-height: 1.8;
+        }
+
+        .subsection {
+            margin-top: 1.2rem;
+            padding: 1rem;
+            background-color: var(--cream-light);
+            border-left: 3px solid var(--gold);
+        }
+
+        .subsection-title {
+            font-weight: 500;
+            color: var(--brown-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Back Button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 0.7rem 1.2rem;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-light) 100%);
+            border: 2px solid var(--wood);
+            color: var(--brown-dark);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            border-radius: 2px;
+        }
+
+        .back-button:hover, .back-button:focus {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border-color: var(--gold);
+            color: white;
+            outline: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--brown-light);
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state::before {
+            content: '✦';
+            display: block;
+            font-size: 3rem;
+            color: var(--gold);
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .card-detail {
+                padding: 1.5rem;
+            }
+
+            .card-detail-title {
+                font-size: 1.8rem;
+            }
+
+            .card-image-placeholder {
+                height: 240px;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .section-content {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tarot Dictionary</h1>
+        <div class="nav-container">
+            <div class="dropdowns-row">
+                <select id="majorSelect" aria-label="Select Major Arcana card">
+                    <option value="">Major</option>
+                </select>
+                <select id="cupsSelect" aria-label="Select Cups card">
+                    <option value="">Cups</option>
+                </select>
+                <select id="swordsSelect" aria-label="Select Swords card">
+                    <option value="">Swords</option>
+                </select>
+                <select id="wandsSelect" aria-label="Select Wands card">
+                    <option value="">Wands</option>
+                </select>
+                <select id="pentaclesSelect" aria-label="Select Pentacles card">
+                    <option value="">Pentacles</option>
+                </select>
+            </div>
+            <div class="search-wrapper">
+                <input type="search" id="searchInput" placeholder="Search cards..." aria-label="Search cards" autocomplete="off">
+                <div id="suggestions" class="search-suggestions"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="content"></main>
+
+    <script>
+        // ──── CARD DATA STRUCTURE ────
+
+        const cardData = {
+            major: [
+                {
+                    id: "0-fool",
+                    number: "0",
+                    name: "The Fool",
+                    suit: "Major Arcana",
+                    keywords: "Beginning, innocence, new journey, risk, free spirit",
+                    traditional: "The beginning of the Fool's journey. Innocence, naivety, new beginnings. Taking a leap of faith without knowing the outcome. The spirit of adventure and readiness to begin.",
+                    jungian: "The Unconscious Self embarking on individuation. The primal openness before the conscious personality forms. Pure potential.",
+                    shadow: "Recklessness, naivety that harms, refusal to take anything seriously, chaos without growth.",
+                    integration: "Balancing openness with wisdom, taking risks consciously, beginning the journey toward wholeness.",
+                    howToUse: "As Pairing: The Fool with The Magician suggests raw potential meeting conscious will. With The Wheel of Fortune: destiny and chance. With The Hermit: the journey inward. The Fool asks: Are you ready to begin? What needs a fresh start?"
+                },
+                {
+                    id: "1-magician",
+                    number: "I",
+                    name: "The Magician",
+                    suit: "Major Arcana",
+                    keywords: "Power, manifestation, will, skill, resourcefulness",
+                    traditional: "Skill, mastery, will, manifestation. The power to create reality through focused intention. Resources available and ready to be used.",
+                    jungian: "The Hero at the threshold of consciousness. The emergence of conscious will and directed intention. Logos as creative force.",
+                    shadow: "Illusion, manipulation, using power to control, dissociation from consequence.",
+                    integration: "Authentic power grounded in wisdom, using skill in service of something larger, intention aligned with values.",
+                    howToUse: "As Pairing: The Magician with Strength suggests power balanced with compassion. With The High Priestess: conscious and unconscious integration. The Magician asks: What power do you possess? How will you use it?"
+                },
+                {
+                    id: "2-high-priestess",
+                    number: "II",
+                    name: "The High Priestess",
+                    suit: "Major Arcana",
+                    keywords: "Intuition, mystery, feminine wisdom, receptivity, secrets",
+                    traditional: "Mystery, intuition, inner knowledge. The veil between conscious and unconscious. Feminine wisdom and receptivity. Trust your instincts.",
+                    jungian: "The deep Unconscious, the anima, the feminine principle. What is hidden and needs to be heard. The portal to soul knowledge.",
+                    shadow: "Inaccessibility, secrets that harm, intuition dismissed or over-trusted, disconnection from grounding.",
+                    integration: "Honoring intuition while also thinking clearly, accessing inner knowledge while remaining engaged with reality.",
+                    howToUse: "As Pairing: The High Priestess with The Magician suggests conscious and unconscious in dialogue. With The Hermit: deep inner work. The High Priestess asks: What do you already know? What is your intuition telling you?"
+                },
+                {
+                    id: "3-empress",
+                    number: "III",
+                    name: "The Empress",
+                    suit: "Major Arcana",
+                    keywords: "Fertility, abundance, nurturing, creativity, feminine power",
+                    traditional: "Fertility, nurturing, creativity, abundance. The mother, the creator. Physical world made beautiful through care and attention.",
+                    jungian: "The Great Mother, the fertile feminine. Creative potential embodied. Eros as generative power.",
+                    shadow: "Overindulgence, smothering love, creativity blocked, scarcity mentality despite resources.",
+                    integration: "Creating and nurturing while maintaining boundaries, generative power expressed authentically, abundance shared.",
+                    howToUse: "As Pairing: The Empress with The Emperor suggests masculine and feminine in balance. With Eight of Pentacles: creativity becoming mastery. The Empress asks: What are you creating? How do you nurture what matters?"
+                },
+                {
+                    id: "4-emperor",
+                    number: "IV",
+                    name: "The Emperor",
+                    suit: "Major Arcana",
+                    keywords: "Authority, structure, father, control, masculine power",
+                    traditional: "Authority, structure, power, rules. The father figure. Order and control. Masculine principle and sovereignty.",
+                    jungian: "The archetypal Father, the superego, conscious authority. Order and containment. The principle that structures the world.",
+                    shadow: "Tyranny, excessive control, rigid structure that prevents growth, emotional coldness.",
+                    integration: "Authority grounded in wisdom, structure that serves growth, power used in service of others.",
+                    howToUse: "As Pairing: The Emperor with The Empress suggests balance of masculine and feminine power. With The Fool: order and beginning. The Emperor asks: Where do you need to establish boundaries? How are you using your authority?"
+                },
+                {
+                    id: "5-hierophant",
+                    number: "V",
+                    name: "The Hierophant",
+                    suit: "Major Arcana",
+                    keywords: "Tradition, teaching, belief, orthodoxy, wisdom keeper",
+                    traditional: "Tradition, teaching, belief systems. The spiritual authority. Conformity and following established rules.",
+                    jungian: "The Wise Old Man, the keeper of tradition. Wisdom passed down through generations. Superego as teacher.",
+                    shadow: "Rigid orthodoxy, dismissal of individual truth, authoritarianism, control through belief.",
+                    integration: "Honoring tradition while creating your own path, learning from wisdom while questioning, teaching with openness.",
+                    howToUse: "As Pairing: The Hierophant with The Rebel/Devil suggests tradition meeting revolution. With The Lovers: personal belief. The Hierophant asks: What wisdom are you honoring? What beliefs need questioning?"
+                },
+                {
+                    id: "6-lovers",
+                    number: "VI",
+                    name: "The Lovers",
+                    suit: "Major Arcana",
+                    keywords: "Love, relationship, choice, values, alignment",
+                    traditional: "Love, relationships, choice, values. Union and connection. Choosing what aligns with your truth.",
+                    jungian: "The anima/animus awakening. Integration of masculine and feminine. Eros as connecting force. Authenticity in relationship.",
+                    shadow: "Obsession, codependency, choices made from fear, disconnection from authentic desire.",
+                    integration: "Love grounded in individuality, choosing relationships that honor your truth, connection that allows growth.",
+                    howToUse: "As Pairing: The Lovers with The Hermit suggests relationship and solitude in balance. With Strength: love grounded in security. The Lovers asks: What do you truly value? Are your relationships aligned with your values?"
+                },
+                {
+                    id: "7-chariot",
+                    number: "VII",
+                    name: "The Chariot",
+                    suit: "Major Arcana",
+                    keywords: "Will, control, direction, momentum, victory",
+                    traditional: "Will, control, determination. Moving forward with purpose. Victory through effort and direction.",
+                    jungian: "The ego asserting direction and will. Conscious effort toward a goal. The Hero claiming power.",
+                    shadow: "Loss of control, driving too hard, not listening to others, momentum without wisdom.",
+                    integration: "Moving forward with awareness, directing will consciously, allowing feedback even while maintaining direction.",
+                    howToUse: "As Pairing: The Chariot with Eight of Wands suggests momentum accelerating. With The Hermit: pausing before moving. The Chariot asks: What direction are you moving? Are you in control or being driven?"
+                },
+                {
+                    id: "8-strength",
+                    number: "VIII",
+                    name: "Strength",
+                    suit: "Major Arcana",
+                    keywords: "Courage, compassion, strength, gentleness, inner power",
+                    traditional: "Strength, courage, compassion. Inner strength and gentle power. Control through understanding rather than force.",
+                    jungian: "The integration of animal power with consciousness. Eros meeting Logos. Compassionate strength.",
+                    shadow: "Suppression of strength, aggressive power, using gentleness as weakness, denial of personal power.",
+                    integration: "Claiming strength while remaining compassionate, power that doesn't dominate, courage grounded in kindness.",
+                    howToUse: "As Pairing: Strength with The Lion/Leo suggests animal power. With The Tower: strength meeting destruction. Strength asks: What inner resources do you have? How can you be both strong and kind?"
+                },
+                {
+                    id: "9-hermit",
+                    number: "IX",
+                    name: "The Hermit",
+                    suit: "Major Arcana",
+                    keywords: "Solitude, search, introspection, wisdom, withdrawal",
+                    traditional: "Solitude, inner search, introspection, wisdom within. Withdrawal to find truth. The journey inward.",
+                    jungian: "The journey toward the Self through solitude. The Wise Old Man guiding the journey. Integration through withdrawal.",
+                    shadow: "Isolation, loneliness, withdrawal that blocks growth, hermitage as escape.",
+                    integration: "Using solitude for genuine insight, returning to community with wisdom, balance between withdrawal and engagement.",
+                    howToUse: "As Pairing: The Hermit with The High Priestess suggests deep inner work. With The Lovers: solitude and relationship. The Hermit asks: What do you need to understand about yourself? What wisdom is seeking you?"
+                },
+                {
+                    id: "10-wheel",
+                    number: "X",
+                    name: "Wheel of Fortune",
+                    suit: "Major Arcana",
+                    keywords: "Luck, destiny, cycles, turning point, chance",
+                    traditional: "Luck, destiny, cycles, turning point. The wheel turning. What goes up comes down, what goes down rises again.",
+                    jungian: "The cycles of individuation. Fate and synchronicity. The Self's larger patterns unfolding.",
+                    shadow: "Victimhood, powerlessness, refusal to act thinking all is destiny, chaos without pattern.",
+                    integration: "Working with larger patterns while exercising choice, understanding cycles while remaining engaged.",
+                    howToUse: "As Pairing: Wheel with The Magician suggests chance and will in dialogue. With Death: transformation cycling. Wheel asks: What cycle are you in? How can you work with rather than against the current?"
+                },
+                {
+                    id: "11-justice",
+                    number: "XI",
+                    name: "Justice",
+                    suit: "Major Arcana",
+                    keywords: "Justice, balance, truth, accountability, fairness",
+                    traditional: "Justice, balance, truth, fairness. Accountability and consequence. Truth revealed.",
+                    jungian: "The balance of opposites. Truth and right action. Integration through justice.",
+                    shadow: "Injustice, imbalance, denial of accountability, judgment without compassion.",
+                    integration: "Seeking justice while remaining compassionate, holding accountability with understanding, truth balanced with mercy.",
+                    howToUse: "As Pairing: Justice with The Emperor suggests authority serving justice. With Temperance: balance and fairness. Justice asks: What truth needs to be spoken? Where is balance needed?"
+                },
+                {
+                    id: "12-hanged-man",
+                    number: "XII",
+                    name: "The Hanged Man",
+                    suit: "Major Arcana",
+                    keywords: "Suspension, perspective shift, sacrifice, pause, surrender",
+                    traditional: "Suspension, pause, perspective shift. Sacrifice and surrender. Seeing from a new angle.",
+                    jungian: "The death of the ego's usual perspective. Liminality. The threshold between old and new self.",
+                    shadow: "Stagnation, refusal to act, martyrdom, being stuck.",
+                    integration: "Using pause productively, shifting perspective while remaining engaged, sacrifice that serves growth.",
+                    howToUse: "As Pairing: Hanged Man with Four of Swords suggests rest and pause. With Death: major transformation. Hanged Man asks: What perspective shift is needed? What would you see if you turned your thinking upside down?"
+                },
+                {
+                    id: "13-death",
+                    number: "XIII",
+                    name: "Death",
+                    suit: "Major Arcana",
+                    keywords: "Ending, transformation, release, inevitable change, renewal",
+                    traditional: "Ending, transformation, release. The necessary death before rebirth. Inevitable change and moving on.",
+                    jungian: "The death of the old self. Necessary dissolution for rebirth. The Self's transformative power.",
+                    shadow: "Resistance to change, stagnation, premature ending, fear of loss.",
+                    integration: "Allowing necessary endings, moving through transformation consciously, grieving while opening to renewal.",
+                    howToUse: "As Pairing: Death with Six of Wands suggests ending leading to victory. With The Fool: death and rebirth. Death asks: What is ready to end? How can you grieve and renew?"
+                },
+                {
+                    id: "14-temperance",
+                    number: "XIV",
+                    name: "Temperance",
+                    suit: "Major Arcana",
+                    keywords: "Balance, moderation, harmony, patience, mixing",
+                    traditional: "Balance, moderation, harmony. Mixing opposites into something new. Patience and measured approach.",
+                    jungian: "The integration of opposites. The Self balancing all forces. Alchemy of consciousness.",
+                    shadow: "Excess, imbalance, inability to moderate, loss of harmony.",
+                    integration: "Finding sustainable balance, mixing different aspects consciously, patience in integration.",
+                    howToUse: "As Pairing: Temperance with Two of Pentacles suggests balance and juggling. With Strength: power and gentleness. Temperance asks: Where is balance needed? How can opposites work together?"
+                },
+                {
+                    id: "15-devil",
+                    number: "XV",
+                    name: "The Devil",
+                    suit: "Major Arcana",
+                    keywords: "Shadow, bondage, addiction, power used wrongly, liberation",
+                    traditional: "Shadow, bondage, addiction, chains of our own making. Power misused. Temptation and entrapment.",
+                    jungian: "The denied shadow. What we refuse to see in ourselves. Raw animal power bound by consciousness.",
+                    shadow: "Identification with shadow, acting out, projection, victimhood.",
+                    integration: "Recognizing shadow and reclaiming power, breaking unnecessary chains, conscious engagement with darkness.",
+                    howToUse: "As Pairing: Devil with Strength suggests shadow and light. With The Fool: freedom and bondage. Devil asks: What chains are you ready to break? What shadow are you ready to face?"
+                },
+                {
+                    id: "16-tower",
+                    number: "XVI",
+                    name: "The Tower",
+                    suit: "Major Arcana",
+                    keywords: "Destruction, upheaval, sudden change, breakdown, clarity",
+                    traditional: "Destruction, upheaval, sudden change. The foundations crumbling. Clarity through destruction.",
+                    jungian: "The breaking down of the false self. Necessary destruction for authentic rebirth. Crisis as initiation.",
+                    shadow: "Devastation, loss, trauma, inability to rebuild.",
+                    integration: "Moving through upheaval consciously, finding meaning in destruction, rebuilding more authentically.",
+                    howToUse: "As Pairing: Tower with The Star suggests destruction and hope. With Death: necessary endings. Tower asks: What's crumbling? Can you trust that something truer emerges?"
+                },
+                {
+                    id: "17-star",
+                    number: "XVII",
+                    name: "The Star",
+                    suit: "Major Arcana",
+                    keywords: "Hope, inspiration, clarity, vision, guidance",
+                    traditional: "Hope, inspiration, clarity. The guiding light. Vision of what's possible. Serenity and faith.",
+                    jungian: "The Self as guiding light. Vision of wholeness. Inspiration and hope emerging from the unconscious.",
+                    shadow: "False hope, losing sight, despair, disconnection from vision.",
+                    integration: "Maintaining hope while remaining realistic, following vision while grounded, inspiration serving purpose.",
+                    howToUse: "As Pairing: Star with The Tower suggests hope after destruction. With The Sun: brightness and warmth. Star asks: What guides you? Where is your hope pointing?"
+                },
+                {
+                    id: "18-moon",
+                    number: "XVIII",
+                    name: "The Moon",
+                    suit: "Major Arcana",
+                    keywords: "Illusion, intuition, dreams, fear, unconscious",
+                    traditional: "Illusion, intuition, dreams. The unconscious revealed. What's hidden or distorted. Madness and mystery.",
+                    jungian: "The realm of dreams and the unconscious. Intuition and irrational wisdom. The shadow's voice.",
+                    shadow: "Delusion, fear-based thinking, disconnect from reality, madness.",
+                    integration: "Honoring intuition while checking reality, exploring unconscious without losing grounding, dreams as guidance.",
+                    howToUse: "As Pairing: Moon with The High Priestess suggests deep unconscious work. With The Sun: illusion and clarity. Moon asks: What are you afraid of? What is your unconscious trying to tell you?"
+                },
+                {
+                    id: "19-sun",
+                    number: "XIX",
+                    name: "The Sun",
+                    suit: "Major Arcana",
+                    keywords: "Joy, success, clarity, vitality, enlightenment",
+                    traditional: "Joy, success, clarity, vitality. Pure brightness and warmth. Enlightenment and fulfillment.",
+                    jungian: "The radiance of the Self. Consciousness fully awake. Integration bringing joy.",
+                    shadow: "Forced positivity, harshness, burning out, loss of nuance.",
+                    integration: "Genuine joy grounded in reality, success that serves others, radiance that doesn't deny shadow.",
+                    howToUse: "As Pairing: Sun with The Moon suggests light and dark in balance. With The Star: hope realized. Sun asks: What are you celebrating? How does success feel?"
+                },
+                {
+                    id: "20-judgement",
+                    number: "XX",
+                    name: "Judgement",
+                    suit: "Major Arcana",
+                    keywords: "Reckoning, awakening, second chances, calling, transformation",
+                    traditional: "Reckoning, awakening, second chances. The call to transform. Judgment and evaluation leading to rebirth.",
+                    jungian: "The call of the Self. Individuation's critical turning point. Being called to one's authentic purpose.",
+                    shadow: "Self-judgment, fear of judgment, harsh criticism, refusing the call.",
+                    integration: "Honest self-evaluation without harsh judgment, answering your calling, transformation consciously chosen.",
+                    howToUse: "As Pairing: Judgement with Death suggests death and rebirth. With The World: near completion. Judgement asks: What is calling you? How will you answer?"
+                },
+                {
+                    id: "21-world",
+                    number: "XXI",
+                    name: "The World",
+                    suit: "Major Arcana",
+                    keywords: "Completion, wholeness, integration, fulfillment, celebration",
+                    traditional: "Completion, wholeness, integration. The journey's end and new beginning. Fulfillment and celebration.",
+                    jungian: "The Self fully integrated. The completion of individuation's cycle. Wholeness realized.",
+                    shadow: "Incompletion, refusal to end something, inability to celebrate, attachment to the ending.",
+                    integration: "Celebrating wholeness while remaining open to new journeys, integration that serves others, completion as beginning.",
+                    howToUse: "As Pairing: World with The Fool suggests ending and beginning. With The Sun: completion and joy. World asks: What have you completed? What's the next journey?"
+                }
+            ],
+            cups: [
+                {
+                    id: "ace-cups",
+                    name: "Ace of Cups",
+                    suit: "Cups",
+                    keywords: "New love, emotional gift, opening of heart, possibility, new relationship",
+                    traditional: "New emotion, new relationship, the opening of the heart. A spiritual gift or emotional beginning.",
+                    jungian: "The awakening of feeling and connection, the emergence of the anima/animus.",
+                    shadow: "Emotional overwhelm, opening too much too soon, false feelings, emotional confusion.",
+                    integration: "Opening to genuine emotion while maintaining boundaries, receiving feelings consciously.",
+                    howToUse: "Pair with: Two of Cups (mutual connection), Four of Cups (receiving), Ten of Cups (family/belonging)"
+                },
+                {
+                    id: "two-cups",
+                    name: "Two of Cups",
+                    suit: "Cups",
+                    keywords: "Partnership, mutual connection, relationship beginning, attraction, bonding",
+                    traditional: "Partnership, mutual respect, attraction, the beginning of relationship. Genuine connection.",
+                    jungian: "The meeting of two psyches, anima/animus activation, authentic relating.",
+                    shadow: "Codependency, false intimacy, merger without individuality, disconnection.",
+                    integration: "Partnership that honors both individuals, intimacy without losing self.",
+                    howToUse: "Pair with: The Lovers (chosen connection), Six of Cups (reunion), Ten of Cups (deepened partnership)"
+                },
+                {
+                    id: "three-cups",
+                    name: "Three of Cups",
+                    suit: "Cups",
+                    keywords: "Celebration, community, friendship, gathering, joy",
+                    traditional: "Community, celebration, friendship, the joy of gathering with others.",
+                    jungian: "The Self expressing through community, belonging and celebration.",
+                    shadow: "Exclusion, false friends, partying as avoidance, superficial connection.",
+                    integration: "Genuine community and celebration, friendships grounded in authenticity.",
+                    howToUse: "Pair with: Four of Cups (individual retreat), Six of Cups (childhood bonds), Ten of Cups (family)"
+                },
+                {
+                    id: "four-cups",
+                    name: "Four of Cups",
+                    suit: "Cups",
+                    keywords: "Apathy, meditation, contemplation, numbness, inner focus",
+                    traditional: "Apathy, withdrawal, contemplation. Inward focus, sometimes turning away from what's offered.",
+                    jungian: "The soul turning inward, needing space and quiet for integration.",
+                    shadow: "Apathy, disconnection, depression, missed opportunities, refusing growth.",
+                    integration: "Using withdrawal for genuine reflection, meditation without dissociation.",
+                    howToUse: "Pair with: Hermit (solitude), Five of Cups (processing loss), Ace of Cups (new opening)"
+                },
+                {
+                    id: "five-cups",
+                    name: "Five of Cups",
+                    suit: "Cups",
+                    keywords: "Loss, grief, sorrow, heartbreak, regret",
+                    traditional: "Loss, grief, heartbreak, sorrow. The pain of separation. Regret and sadness.",
+                    jungian: "The necessary grief that opens the heart deeper. Loss as teacher.",
+                    shadow: "Wallowing in grief, refusing to move forward, victim identity, depression.",
+                    integration: "Grieving fully while moving toward healing, letting loss teach wisdom.",
+                    howToUse: "Pair with: Nine of Cups (healing to joy), Ten of Cups (grief toward family), Four of Cups (need for withdrawal)"
+                },
+                {
+                    id: "six-cups",
+                    name: "Six of Cups",
+                    suit: "Cups",
+                    keywords: "Reunion, innocence, nostalgia, childhood, joy, reunion with past",
+                    traditional: "Reunion, innocence, nostalgia, childhood memory. Reconnection with the past.",
+                    jungian: "Return to innocence and joy, reconnection with the inner child.",
+                    shadow: "Living in the past, arrested development, false nostalgia, avoiding present growth.",
+                    integration: "Honoring past joys while living in the present, reclaiming childhood wisdom.",
+                    howToUse: "Pair with: Three of Cups (current community), The Hermit (looking back), Ten of Cups (family)"
+                },
+                {
+                    id: "seven-cups",
+                    name: "Seven of Cups",
+                    suit: "Cups",
+                    keywords: "Choices, illusion, wishful thinking, fantasy, temptation",
+                    traditional: "Choices and illusions, temptation, wishful thinking. Many options but are they real?",
+                    jungian: "The fantasy offerings of the unconscious, the choice between illusion and reality.",
+                    shadow: "Denial, escapism, inability to choose, chasing illusions.",
+                    integration: "Distinguishing real desire from fantasy, choosing wisely among options.",
+                    howToUse: "Pair with: Justice (right choice), The Magician (manifestation), Two of Swords (decision-making)"
+                },
+                {
+                    id: "eight-cups",
+                    name: "Eight of Cups",
+                    suit: "Cups",
+                    keywords: "Abandonment, leaving, moving on, walking away, transition",
+                    traditional: "Leaving, moving on, abandonment, walking away from what no longer serves.",
+                    jungian: "The necessary leaving toward something more authentic, walking away from false connection.",
+                    shadow: "Abandonment of others, avoidance, not facing endings, refusing to commit.",
+                    integration: "Leaving consciously when needed, grieving while moving forward.",
+                    howToUse: "Pair with: Six of Wands (new direction), Death (transformation), Star (moving toward hope)"
+                },
+                {
+                    id: "nine-cups",
+                    name: "Nine of Cups",
+                    suit: "Cups",
+                    keywords: "Contentment, satisfaction, wish fulfilled, abundance of feeling, joy",
+                    traditional: "Contentment, satisfaction, wishes coming true, the wish card. Emotional fulfillment.",
+                    jungian: "The gratification of deep emotional needs, the Self at peace.",
+                    shadow: "Complacency, taking for granted, spiritual laziness, empty satisfaction.",
+                    integration: "Enjoying genuine fulfillment while remaining open, gratitude without stagnation.",
+                    howToUse: "Pair with: Ten of Pentacles (material completion), The Sun (brightness), Ten of Cups (family fulfillment)"
+                },
+                {
+                    id: "ten-cups",
+                    name: "Ten of Cups",
+                    suit: "Cups",
+                    keywords: "Family, harmony, happiness, belonging, completion of relationship",
+                    traditional: "Family, harmony, happiness, belonging. The fulfillment of emotional journey. True home.",
+                    jungian: "The Self expressing through family and community, wholeness in relationship.",
+                    shadow: "Dysfunction hidden as harmony, enmeshment, family as prison, false peace.",
+                    integration: "Creating genuine family harmony, belonging without loss of self.",
+                    howToUse: "Pair with: Six of Cups (childhood), Three of Cups (celebration), World (completion)"
+                },
+                {
+                    id: "page-cups",
+                    name: "Page of Cups",
+                    suit: "Cups",
+                    keywords: "Youth, curiosity, playfulness, artistic sensitivity, emotional openness",
+                    traditional: "Young emotional energy, curiosity, playfulness, artistic sensitivity. The Puer/Puella emotionally.",
+                    jungian: "The young anima/animus, emotional openness and vulnerability.",
+                    shadow: "Emotional immaturity, moody, oversensitive, unfocused emotionally.",
+                    integration: "Honoring emotional depth while developing maturity, creative sensitivity grounded.",
+                    howToUse: "Pair with: Queen of Cups (emotional maturity), Ace of Cups (emotional awakening), Six of Cups (innocent joy)"
+                },
+                {
+                    id: "knight-cups",
+                    name: "Knight of Cups",
+                    suit: "Cups",
+                    keywords: "Romance, idealism, adventure of heart, messenger, charm",
+                    traditional: "Romance, idealism, artistic pursuit, the romantic. Charming and emotionally alive.",
+                    jungian: "The active pursuit of emotional and artistic truth, Eros engaging the world.",
+                    shadow: "Idealism that avoids reality, seduction, emotional manipulation, unrealistic expectations.",
+                    integration: "Pursuing romance and art with awareness, idealism grounded in reality.",
+                    howToUse: "Pair with: The Lovers (chosen connection), Two of Cups (mutual romance), The Magician (charm)"
+                },
+                {
+                    id: "queen-cups",
+                    name: "Queen of Cups",
+                    suit: "Cups",
+                    keywords: "Intuition, nurturing, emotional intelligence, depth, the healer",
+                    traditional: "Emotional intelligence, nurturing, intuitive wisdom, depth. The woman of feeling and wisdom.",
+                    jungian: "The mature anima, emotional authority and depth, the healer and listener.",
+                    shadow: "Over-nurturing, emotional coldness disguised, codependency, using emotion to control.",
+                    integration: "Nurturing others while maintaining emotional boundaries, intuition grounded in wisdom.",
+                    howToUse: "Pair with: King of Cups (emotional mastery), Six of Cups (nurturing youth), Ten of Cups (family emotional wisdom)"
+                },
+                {
+                    id: "king-cups",
+                    name: "King of Cups",
+                    suit: "Cups",
+                    keywords: "Emotional mastery, compassion, wisdom, diplomatic, the healer leader",
+                    traditional: "Emotional mastery, compassion, wisdom, diplomatic leadership. The emotionally mature man.",
+                    jungian: "The mature animus, emotional wisdom and authority, the sage and healer.",
+                    shadow: "Emotional coldness, manipulation through feeling, control disguised as compassion.",
+                    integration: "Leading with compassion while remaining clear, emotional authority that serves.",
+                    howToUse: "Pair with: Queen of Cups (partnership), Justice (fair leadership), Strength (compassionate power)"
+                }
+            ],
+            swords: [
+                {
+                    id: "ace-swords",
+                    name: "Ace of Swords",
+                    suit: "Swords",
+                    keywords: "New clarity, truth, breakthrough, clarity, communication",
+                    traditional: "New clarity, truth, breakthrough. The power of clear thinking. Truth cutting through confusion.",
+                    jungian: "The emergence of clarity, consciousness cutting through unconscious fog.",
+                    shadow: "Harsh truth without compassion, intellectual arrogance, confusion despite clarity offered.",
+                    integration: "Speaking and hearing truth with compassion, clarity that serves understanding.",
+                    howToUse: "Pair with: Justice (truth as fairness), Strength (clarity with compassion), Two of Swords (clearing confusion)"
+                },
+                {
+                    id: "two-swords",
+                    name: "Two of Swords",
+                    suit: "Swords",
+                    keywords: "Stalemate, indecision, deadlock, truce, being torn",
+                    traditional: "Indecision, stalemate, being torn between two truths. Deadlock and difficult choices.",
+                    jungian: "The ego caught between conflicting truths, unable to choose.",
+                    shadow: "Paralysis, refusing to choose, avoiding responsibility, false balance.",
+                    integration: "Making conscious choices despite complexity, committing to direction.",
+                    howToUse: "Pair with: The Magician (moving toward action), Justice (right choice), Chariot (clear direction)"
+                },
+                {
+                    id: "three-swords",
+                    name: "Three of Swords",
+                    suit: "Swords",
+                    keywords: "Pain, sorrow, heartbreak, separation, difficult truth",
+                    traditional: "Heartbreak, sorrow, separation. Painful truth. The sword through the heart.",
+                    jungian: "Truth that cuts, clarity that wounds. Necessary pain for growth.",
+                    shadow: "Wallowing in pain, being hurt repeatedly, avoiding difficult truths.",
+                    integration: "Facing painful truth, moving through sorrow toward healing.",
+                    howToUse: "Pair with: Five of Cups (grief process), Star (hope after pain), Hermit (processing pain)"
+                },
+                {
+                    id: "four-swords",
+                    name: "Four of Swords",
+                    suit: "Swords",
+                    keywords: "Rest, respite, recovery, pause, truce",
+                    traditional: "Rest, recovery, pause, truce. Recovery period after conflict or effort.",
+                    jungian: "The necessary pause for integration and healing.",
+                    shadow: "Stagnation, refusing to engage, dissociation, apathy.",
+                    integration: "Using rest productively for recovery, pause that serves.",
+                    howToUse: "Pair with: Nine of Swords (rest from anxiety), Hermit (retreat for reflection), Chariot (rest before moving)"
+                },
+                {
+                    id: "five-swords",
+                    name: "Five of Swords",
+                    suit: "Swords",
+                    keywords: "Conflict, defeat, pyrrhic victory, struggle, aggression",
+                    traditional: "Conflict, defeat, hollow victory. Aggression and its aftermath.",
+                    jungian: "Intellectual conflict that wounds, victory without real winning.",
+                    shadow: "Aggressive argumentation, pride preventing peace, enjoying conflict.",
+                    integration: "Choosing battles wisely, finding resolution over victory.",
+                    howToUse: "Pair with: Three of Swords (conflict depth), Six of Wands (true victory), Peace cards (moving toward resolution)"
+                },
+                {
+                    id: "six-swords",
+                    name: "Six of Swords",
+                    suit: "Swords",
+                    keywords: "Transition, moving on, healing journey, recovery, escape",
+                    traditional: "Moving forward, transition, escape from difficulty, the healing journey.",
+                    jungian: "The conscious movement toward something better, journey toward wholeness.",
+                    shadow: "Running away without resolving, escape as avoidance, unfinished business.",
+                    integration: "Making conscious transitions, healing while moving forward.",
+                    howToUse: "Pair with: Death (major transformation), Eight of Cups (leaving), Star (moving toward hope)"
+                },
+                {
+                    id: "seven-swords",
+                    name: "Seven of Swords",
+                    suit: "Swords",
+                    keywords: "Deception, strategy, cunning, theft, betrayal",
+                    traditional: "Deception, cunning, theft, betrayal. The sneaky approach, dishonesty.",
+                    jungian: "Use of intellect to deceive, clever lies, taking what isn't yours.",
+                    shadow: "Being deceived, dishonesty, intellectual manipulation, theft of credit.",
+                    integration: "Honesty even when harder, strategic thinking without betrayal.",
+                    howToUse: "Pair with: Justice (truth revealed), Devil (shadow), Lovers (authentic connection)"
+                },
+                {
+                    id: "eight-swords",
+                    name: "Eight of Swords",
+                    suit: "Swords",
+                    keywords: "Restriction, bound by thoughts, mental prison, limitation, paralysis",
+                    traditional: "Being bound, restricted, unable to move. Mental prison from limiting beliefs.",
+                    jungian: "Ways your own thinking binds you, beliefs that have become prisons.",
+                    shadow: "Victim mentality, genuine helplessness, refusal to see freedom available.",
+                    integration: "Questioning limiting beliefs, recognizing available freedom.",
+                    howToUse: "Pair with: Strength (breaking free), Chariot (taking direction), Star (hope)"
+                },
+                {
+                    id: "nine-swords",
+                    name: "Nine of Swords",
+                    suit: "Swords",
+                    keywords: "Anxiety, nightmares, obsessive thinking, worry, mental torment",
+                    traditional: "Anxiety, worry, sleeplessness, nightmares. Mind turned against itself.",
+                    jungian: "Anxiety as signal from unconscious, thoughts that torture.",
+                    shadow: "Clinical anxiety, insomnia, obsessive patterns, mental suffering as identity.",
+                    integration: "Facing what you're anxious about, calming the mind, using anxiety as information.",
+                    howToUse: "Pair with: Four of Swords (rest), Strength (security), Sun (clarity)"
+                },
+                {
+                    id: "ten-swords",
+                    name: "Ten of Swords",
+                    suit: "Swords",
+                    keywords: "Defeat, ending, rock bottom, betrayal, completion",
+                    traditional: "Defeat, rock bottom, everything fallen apart. The moment before turning.",
+                    jungian: "Point where old ways of thinking must die, necessary destruction of limiting beliefs.",
+                    shadow: "Despair, victimhood, refusal to see any way forward.",
+                    integration: "Acknowledging the ending, moving through despair toward renewal.",
+                    howToUse: "Pair with: Death (major transformation), Star (hope ahead), World (completion and new beginning)"
+                },
+                {
+                    id: "page-swords",
+                    name: "Page of Swords",
+                    suit: "Swords",
+                    keywords: "Curiosity, new ideas, youthful intellect, communication, investigation",
+                    traditional: "Curious youth, new ideas, youthful mental energy. Questions and investigation.",
+                    jungian: "Young mind eager to learn, Puer/Puella intellectually.",
+                    shadow: "Immature reasoning, intellectual arrogance, unfocused curiosity.",
+                    integration: "Honoring curiosity while developing wisdom, asking good questions.",
+                    howToUse: "Pair with: Knight of Swords (intellectual pursuit), Ace of Swords (clarity), Hermit (deep learning)"
+                },
+                {
+                    id: "knight-swords",
+                    name: "Knight of Swords",
+                    suit: "Swords",
+                    keywords: "Clarity, truth-telling, direct communication, intellectual pursuit, defender",
+                    traditional: "Clear thinking, truth-telling, the intellectual warrior pursuing truth.",
+                    jungian: "Active pursuit of truth, intellectual warrior, Logos in service of understanding.",
+                    shadow: "Harsh truth without compassion, argumentativeness, using words as weapons.",
+                    integration: "Speaking truth compassionately, listening as well as speaking.",
+                    howToUse: "Pair with: Justice (true justice), Strength (clear with compassion), The Magician (clear communication)"
+                },
+                {
+                    id: "queen-swords",
+                    name: "Queen of Swords",
+                    suit: "Swords",
+                    keywords: "Intellectual independence, clarity, discernment, wisdom, direct truth",
+                    traditional: "Woman who thinks for herself, values truth over comfort. Clarity and discernment.",
+                    jungian: "Woman of intellectual maturity and integrity, independent authority.",
+                    shadow: "Emotional coldness, intellectual superiority, harsh judgment, isolation.",
+                    integration: "Clear thinking grounded in compassion, intellectual authority that's open.",
+                    howToUse: "Pair with: Justice (fair judgment), King of Swords (partnership), Queen of Cups (heart and mind)"
+                },
+                {
+                    id: "king-swords",
+                    name: "King of Swords",
+                    suit: "Swords",
+                    keywords: "Authority, intellectual mastery, clear thinking, justice, leadership of mind",
+                    traditional: "Intellectual authority, clear thinking, just leadership through reason.",
+                    jungian: "Mature intellectual authority, integration of thinking with wisdom.",
+                    shadow: "Tyranny through intellect, cold logic without compassion, arrogance.",
+                    integration: "Leading with clarity while remaining open, intellect in service of justice.",
+                    howToUse: "Pair with: Justice (just authority), The Emperor (fair rule), Queen of Swords (intellectual partnership)"
+                }
+            ],
+            wands: [
+                {
+                    id: "ace-wands",
+                    name: "Ace of Wands",
+                    suit: "Wands",
+                    keywords: "New inspiration, creative spark, beginning, energy, potential",
+                    traditional: "New inspiration, creative spark, energy ignited. Pure creative potential.",
+                    jungian: "Emergence of creative potential, spark of inspiration igniting will and passion.",
+                    shadow: "Unfocused energy, flash-in-the-pan enthusiasm, scattered passion.",
+                    integration: "Channeling creative energy consciously, following inspiration with discipline.",
+                    howToUse: "Pair with: The Magician (acting on inspiration), Three of Wands (expanding), Six of Wands (creative success)"
+                },
+                {
+                    id: "two-wands",
+                    name: "Two of Wands",
+                    suit: "Wands",
+                    keywords: "Power, choice, planning, potential, contemplation",
+                    traditional: "Potential and contemplation, planning, moment of choosing direction.",
+                    jungian: "Active consideration of possibilities, will meeting choice.",
+                    shadow: "Indecision disguised as planning, hesitation, options leading to paralysis.",
+                    integration: "Making choices consciously, planning with purpose, committing to direction.",
+                    howToUse: "Pair with: Ace of Wands (direction), The Magician (action), Chariot (commitment)"
+                },
+                {
+                    id: "three-wands",
+                    name: "Three of Wands",
+                    suit: "Wands",
+                    keywords: "Collaboration, expansion, looking ahead, vision, growth",
+                    traditional: "Expansion, collaboration, vision of growth and possibility.",
+                    jungian: "Expansion through connection, vision of larger possibilities.",
+                    shadow: "Overextension, taking on too much, losing individual power.",
+                    integration: "Growing through collaboration while maintaining your own vision.",
+                    howToUse: "Pair with: Ace of Wands (new creative direction), Six of Wands (success), Three of Pentacles (teamwork)"
+                },
+                {
+                    id: "four-wands",
+                    name: "Four of Wands",
+                    suit: "Wands",
+                    keywords: "Celebration, achievement, harmony, foundation, success",
+                    traditional: "Celebration, achievement, harmony established. Success worth celebrating.",
+                    jungian: "Celebration of creative accomplishment, harmony of successful work.",
+                    shadow: "Premature celebration, hollow victory, taking for granted.",
+                    integration: "Celebrating genuinely while remaining aware of future work.",
+                    howToUse: "Pair with: Six of Wands (public success), Nine of Cups (fulfillment), Ten of Pentacles (legacy)"
+                },
+                {
+                    id: "five-wands",
+                    name: "Five of Wands",
+                    suit: "Wands",
+                    keywords: "Conflict, competition, struggle, chaos, creative tension",
+                    traditional: "Conflict, competition, chaos. Multiple forces in opposition.",
+                    jungian: "Clash of different visions and wills, creative tension.",
+                    shadow: "Unnecessary conflict, aggression, inability to collaborate.",
+                    integration: "Competing fairly, engaging with creative tension productively.",
+                    howToUse: "Pair with: Four of Wands (resolution), Three of Wands (collaboration), Six of Wands (victory)"
+                },
+                {
+                    id: "six-wands",
+                    name: "Six of Wands",
+                    suit: "Wands",
+                    keywords: "Victory, recognition, success, validation, public acknowledgment",
+                    traditional: "Victory, recognition, success, public acknowledgment. The reward for effort.",
+                    jungian: "Recognition of creative achievement, acknowledgment of contribution.",
+                    shadow: "Seeking validation excessively, achievements lacking substance, arrogance.",
+                    integration: "Accepting recognition without inflation, enjoying success without attachment.",
+                    howToUse: "Pair with: Four of Wands (achievement), Three of Wands (expansion), Nine of Cups (fulfillment)"
+                },
+                {
+                    id: "seven-wands",
+                    name: "Seven of Wands",
+                    suit: "Wands",
+                    keywords: "Standing your ground, defense, persistence, challenge, resilience",
+                    traditional: "Standing your ground, defending position, persisting despite opposition.",
+                    jungian: "Courageous stance for what you believe in, refusal to be pushed over.",
+                    shadow: "Unnecessary defensiveness, refusing valid input, stubborn pride.",
+                    integration: "Standing firm on what matters while remaining open to valid criticism.",
+                    howToUse: "Pair with: Strength (inner strength), Eight of Pentacles (perseverance), Nine of Wands (near completion)"
+                },
+                {
+                    id: "eight-wands",
+                    name: "Eight of Wands",
+                    suit: "Wands",
+                    keywords: "Speed, momentum, swift movement, acceleration, quick action",
+                    traditional: "Swift movement, speed, momentum building. Things moving quickly.",
+                    jungian: "Rapid manifestation of ideas into action, acceleration of creative energy.",
+                    shadow: "Reckless speed, rushing without thought, chaos from acceleration.",
+                    integration: "Moving with momentum while maintaining direction, acting swiftly consciously.",
+                    howToUse: "Pair with: Chariot (swift movement), Ace of Wands (creative spark), Two of Wands (direction)"
+                },
+                {
+                    id: "nine-wands",
+                    name: "Nine of Wands",
+                    suit: "Wands",
+                    keywords: "Resilience, standing your ground, near the goal, final push, perseverance",
+                    traditional: "Resilience, perseverance, nearing the goal. The final push before completion.",
+                    jungian: "Capacity to keep going despite obstacles, carrying you to completion.",
+                    shadow: "Exhaustion, burnout disguised as persistence, inability to rest.",
+                    integration: "Persisting while knowing when to rest, flexibility about how you get there.",
+                    howToUse: "Pair with: Seven of Wands (standing firm), Ten of Wands (completion), Star (near goal)"
+                },
+                {
+                    id: "ten-wands",
+                    name: "Ten of Wands",
+                    suit: "Wands",
+                    keywords: "Burden, responsibility, overwhelm, too much load, exhaustion",
+                    traditional: "Burden, excessive responsibility, being overwhelmed. Too much weight.",
+                    jungian: "Weight of accumulated responsibility, burden from saying yes to too much.",
+                    shadow: "Victimhood, blaming others, refusing to delegate, martyr complex.",
+                    integration: "Lightening your load consciously, delegating, releasing what's not yours.",
+                    howToUse: "Pair with: Four of Pentacles (letting go), The Hermit (rest), Two of Pentacles (balance)"
+                },
+                {
+                    id: "page-wands",
+                    name: "Page of Wands",
+                    suit: "Wands",
+                    keywords: "Enthusiasm, new ideas, youthful energy, discovery, excitement",
+                    traditional: "Enthusiastic youth, new ideas, youthful creative energy. Excitement and discovery.",
+                    jungian: "Young creative spirit full of possibilities, Puer/Puella creatively.",
+                    shadow: "Immature execution, abandoning projects, lack of follow-through.",
+                    integration: "Honoring enthusiasm while developing discipline, channeling into sustained effort.",
+                    howToUse: "Pair with: Ace of Wands (inspiration), Eight of Pentacles (mastery), Six of Wands (success)"
+                },
+                {
+                    id: "knight-wands",
+                    name: "Knight of Wands",
+                    suit: "Wands",
+                    keywords: "Action, passion, adventure, the adventurer, bold pursuit",
+                    traditional: "Action, passion, bold pursuit. The adventurer, courageous pursuit of passions.",
+                    jungian: "Active pursuit of creative vision, passionate engagement, Eros moving.",
+                    shadow: "Reckless action, burning bridges, pursuit that harms.",
+                    integration: "Acting on passion while remaining conscious, balancing adventure with responsibility.",
+                    howToUse: "Pair with: Ace of Wands (passion), Six of Wands (successful adventure), The Magician (manifestation)"
+                },
+                {
+                    id: "queen-wands",
+                    name: "Queen of Wands",
+                    suit: "Wands",
+                    keywords: "Charisma, creativity, independence, confidence, self-assured",
+                    traditional: "Charismatic creative woman, independent and confident. Magnetic presence.",
+                    jungian: "Woman claiming creative power, authentic expression, independent creative authority.",
+                    shadow: "Aggressive dominance, using charisma to manipulate, creative arrogance.",
+                    integration: "Expressing power authentically without needing approval, genuine confidence.",
+                    howToUse: "Pair with: Six of Wands (success), The Sun (brightness), King of Wands (creative partnership)"
+                },
+                {
+                    id: "king-wands",
+                    name: "King of Wands",
+                    suit: "Wands",
+                    keywords: "Leadership, vision, creative mastery, inspiration, the visionary",
+                    traditional: "Visionary leader, creative mastery, inspired leadership. Passion and mastery combined.",
+                    jungian: "Mature creative authority, integration of passion with wisdom, inspiring leadership.",
+                    shadow: "Tyrannical leadership, using passion to control, vision ignoring others' needs.",
+                    integration: "Leading with vision while honoring autonomy, passion grounded in wisdom.",
+                    howToUse: "Pair with: The Emperor (authority), Six of Wands (success), Queen of Wands (creative partnership)"
+                }
+            ],
+            pentacles: [
+                {
+                    id: "ace-pentacles",
+                    name: "Ace of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "New financial opportunity, material beginning, prosperity, potential for abundance",
+                    traditional: "New financial opportunity, material beginning, seed of prosperity.",
+                    jungian: "Emergence of material potential, foundation for manifestation.",
+                    shadow: "Greed, opportunity with hidden cost, false prosperity.",
+                    integration: "Engaging with material reality consciously, receiving abundance gratefully.",
+                    howToUse: "Pair with: Eight of Pentacles (developing skill), Nine of Pentacles (abundance), Six of Pentacles (sharing)"
+                },
+                {
+                    id: "two-pentacles",
+                    name: "Two of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Balance, juggling resources, flexibility, dexterity, adaptation",
+                    traditional: "Juggling resources, balancing demands, finding rhythm amid complexity.",
+                    jungian: "Capacity to manage material demands while remaining balanced.",
+                    shadow: "Becoming dizzy from juggling, dropping what matters, loss of focus.",
+                    integration: "Managing skillfully, maintaining balance, prioritizing what matters.",
+                    howToUse: "Pair with: Temperance (balance), Four of Pentacles (holding), Eight of Pentacles (focus)"
+                },
+                {
+                    id: "three-pentacles",
+                    name: "Three of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Collaboration, teamwork, shared creation, craftsmanship, building together",
+                    traditional: "Teamwork, collaboration, shared creation toward material goal.",
+                    jungian: "Integration of multiple talents toward shared goal.",
+                    shadow: "Enmeshment, losing individuality in team, unequal contributions.",
+                    integration: "Working well while maintaining individual contribution, respecting different approaches.",
+                    howToUse: "Pair with: Six of Pentacles (fairness), King of Pentacles (leadership), Four of Wands (celebration)"
+                },
+                {
+                    id: "four-pentacles",
+                    name: "Four of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Security, holding on, preservation, stagnation, grip",
+                    traditional: "Security, holding on, creating stability. But risk of holding too tight.",
+                    jungian: "Need for stability and security, potential stagnation from over-control.",
+                    shadow: "Hoarding, miserliness, inability to let resources flow, fear-based holding.",
+                    integration: "Creating real security while remaining open to flow, holding while releasing.",
+                    howToUse: "Pair with: Six of Pentacles (generosity), Two of Pentacles (flexibility), Nine of Pentacles (enjoying security)"
+                },
+                {
+                    id: "five-pentacles",
+                    name: "Five of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Hardship, poverty, struggle, isolation, difficulty",
+                    traditional: "Hardship, poverty, struggle, isolation. Difficulty testing faith.",
+                    jungian: "Material difficulty testing resilience and faith, point where inner resources matter.",
+                    shadow: "Permanent poverty mentality, learned helplessness, refusing help.",
+                    integration: "Finding help and support, discovering inner resources, moving through difficulty.",
+                    howToUse: "Pair with: Six of Pentacles (help offered), Star (hope), The Hermit (inner strength)"
+                },
+                {
+                    id: "six-pentacles",
+                    name: "Six of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Generosity, abundance, sharing, charity, fairness in exchange",
+                    traditional: "Generosity, abundance, sharing freely. Resources flow when circulated.",
+                    jungian: "Understanding that resources flow when circulated, generosity from abundance.",
+                    shadow: "False generosity for control, giving to create obligation, charity that humiliates.",
+                    integration: "Giving and receiving gracefully, generosity without dependency, fair exchange.",
+                    howToUse: "Pair with: Three of Pentacles (teamwork), Ace of Pentacles (opportunity), Nine of Pentacles (enjoying abundance)"
+                },
+                {
+                    id: "seven-pentacles",
+                    name: "Seven of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Investment, patience, long-term growth, tending, waiting for results",
+                    traditional: "Long-term investment, patience, waiting for growth. Tending what you've planted.",
+                    jungian: "Understanding that some things require patient tending, growth cannot be rushed.",
+                    shadow: "Impatience, giving up too soon, lack of faith, neglect.",
+                    integration: "Investing patiently, tending what matters, having faith in slow growth.",
+                    howToUse: "Pair with: Eight of Pentacles (mastery), Nine of Pentacles (harvest), Wheel (cycles)"
+                },
+                {
+                    id: "eight-pentacles",
+                    name: "Eight of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Mastery, apprenticeship, skill development, dedication, continuous improvement",
+                    traditional: "Mastery, dedication to craft, skill development. Apprentice becoming master.",
+                    jungian: "Focused development of skill and competence, dedication to craft.",
+                    shadow: "Perfectionism, obsessive practice, losing joy, dismissing others' work.",
+                    integration: "Developing skill while enjoying process, mastery that serves, honoring journey.",
+                    howToUse: "Pair with: Three of Pentacles (teamwork), Seven of Pentacles (patience), Nine of Pentacles (success)"
+                },
+                {
+                    id: "nine-pentacles",
+                    name: "Nine of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Abundance, accomplishment, material security, independence, comfort",
+                    traditional: "Abundance, accomplishment, material security. Enjoyment of fruits of labor.",
+                    jungian: "Realization of material goals, enjoying the fruits of your labor.",
+                    shadow: "Complacency, taking for granted, isolation in wealth, superficial abundance.",
+                    integration: "Grateful enjoyment of what you've created, continued contribution, sharing abundance.",
+                    howToUse: "Pair with: Six of Pentacles (sharing), Ten of Pentacles (legacy), The World (completion)"
+                },
+                {
+                    id: "ten-pentacles",
+                    name: "Ten of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Wealth, inheritance, family legacy, completion, abundance passed down",
+                    traditional: "Wealth, family legacy, generational abundance. What's built endures.",
+                    jungian: "Intergenerational transmission of security and values, wholeness in family context.",
+                    shadow: "Family conflict over inheritance, materialism, legacy of dysfunction.",
+                    integration: "Building legacy consciously, honoring tradition while creating your own path.",
+                    howToUse: "Pair with: Six of Pentacles (sharing), Ten of Cups (family), The World (completion)"
+                },
+                {
+                    id: "page-pentacles",
+                    name: "Page of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Student, new learning, potential, earnest effort, groundedness",
+                    traditional: "The student, new learning, earnest effort. Young one developing practical skills.",
+                    jungian: "Young self engaged in learning practical skills, beginning of material mastery.",
+                    shadow: "Immaturity, laziness, refusing to learn, groundlessness despite effort.",
+                    integration: "Remaining open to learning while developing genuine skill, effort with interest.",
+                    howToUse: "Pair with: Eight of Pentacles (mastery), Three of Pentacles (apprenticeship), The Hermit (study)"
+                },
+                {
+                    id: "knight-pentacles",
+                    name: "Knight of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Reliable, practical, steadfast, responsible, diligent",
+                    traditional: "Reliable, practical, steadfast worker. Diligence and responsibility.",
+                    jungian: "Practical worker grounded in reality, capacity to manifest through patient effort.",
+                    shadow: "Stubborn, inflexible, dull, lacking vision, too focused on details.",
+                    integration: "Being reliable while flexible, diligent without losing larger purpose.",
+                    howToUse: "Pair with: Three of Pentacles (teamwork), Eight of Pentacles (mastery), Nine of Pentacles (success)"
+                },
+                {
+                    id: "queen-pentacles",
+                    name: "Queen of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Nurturing, practical wisdom, grounded presence, abundance, generosity",
+                    traditional: "Nurturing, practical wisdom, grounded presence. Creates comfort and security.",
+                    jungian: "Woman grounded in material reality, tends practical needs with emotional presence.",
+                    shadow: "Controlling through material means, emotional coldness, materialism.",
+                    integration: "Nurturing while maintaining boundaries, practical wisdom grounded in genuine care.",
+                    howToUse: "Pair with: Six of Pentacles (sharing), King of Pentacles (partnership), Ten of Cups (family)"
+                },
+                {
+                    id: "king-pentacles",
+                    name: "King of Pentacles",
+                    suit: "Pentacles",
+                    keywords: "Wealth, mastery, authority over material, prosperity, generosity, stability",
+                    traditional: "Master of material world, wealth, mastery, authority over resources.",
+                    jungian: "Mature material authority, integration of practical wisdom with abundance.",
+                    shadow: "Greed, materialism, arrogance of wealth, control through money.",
+                    integration: "Using wealth and resources wisely, authority grounded in genuine care, prosperity shared.",
+                    howToUse: "Pair with: Queen of Pentacles (partnership), Six of Pentacles (generosity), Ten of Pentacles (legacy)"
+                }
+            ]
+        };
+
+        // ──── FILTER & DISPLAY LOGIC ────
+
+        const contentEl = document.getElementById('content');
+        const majorSelect = document.getElementById('majorSelect');
+        const cupsSelect = document.getElementById('cupsSelect');
+        const swordsSelect = document.getElementById('swordsSelect');
+        const wandsSelect = document.getElementById('wandsSelect');
+        const pentaclesSelect = document.getElementById('pentaclesSelect');
+        const searchInput = document.getElementById('searchInput');
+
+        // Populate dropdowns
+        function populateDropdowns() {
+            cardData.major.forEach(card => {
+                const option = document.createElement('option');
+                option.value = card.id;
+                option.textContent = `${card.number}. ${card.name}`;
+                majorSelect.appendChild(option);
+            });
+
+            [cupsSelect, swordsSelect, wandsSelect, pentaclesSelect].forEach((select, i) => {
+                const suits = ['cups', 'swords', 'wands', 'pentacles'];
+                const suit = suits[i];
+                cardData[suit].forEach(card => {
+                    const option = document.createElement('option');
+                    option.value = card.id;
+                    option.textContent = card.name;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // Find card by ID
+        function findCard(id) {
+            for (const suit in cardData) {
+                const card = cardData[suit].find(c => c.id === id);
+                if (card) return card;
+            }
+            return null;
+        }
+
+        // Render card detail page
+        function renderCardDetail(card) {
+            const html = `
+                <button class="back-button" onclick="location.hash=''">&larr; Back to cards</button>
+                <div class="card-detail">
+                    <div class="card-image-placeholder">
+                        <span>Card image placeholder<br><small style="font-size: 0.8rem; margin-top: 0.5rem;">Add your Rider-Waite or custom image here</small></span>
+                    </div>
+
+                    <div class="card-detail-header">
+                        <div class="card-detail-number">${card.suit}${card.number ? ' — ' + card.number : ''}</div>
+                        <h2 class="card-detail-title">${card.name}</h2>
+                        <p class="card-detail-keywords">${card.keywords}</p>
+                    </div>
+
+                    ${card.traditional ? `
+                    <div class="section">
+                        <h3 class="section-title">Traditional Meaning</h3>
+                        <p class="section-content">${card.traditional}</p>
+                    </div>
+                    ` : ''}
+
+                    ${card.jungian ? `
+                    <div class="section">
+                        <h3 class="section-title">Jungian Perspective</h3>
+                        <p class="section-content">${card.jungian}</p>
+                    </div>
+                    ` : ''}
+
+                    ${card.shadow ? `
+                    <div class="section">
+                        <h3 class="section-title">Shadow Aspect</h3>
+                        <p class="section-content">${card.shadow}</p>
+                    </div>
+                    ` : ''}
+
+                    ${card.integration ? `
+                    <div class="section">
+                        <h3 class="section-title">Integration & Wholeness</h3>
+                        <p class="section-content">${card.integration}</p>
+                    </div>
+                    ` : ''}
+
+                    ${card.howToUse ? `
+                    <div class="section">
+                        <h3 class="section-title">How to Use This Card in a Spread</h3>
+                        <p class="section-content">${card.howToUse}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            contentEl.innerHTML = html;
+        }
+
+        // Render main page with animated bouncing polygonal shapes
+        function renderMainPage() {
+            const bouncingGraphic = `
+                <div class="main-graphic">
+                    <style>
+                        @keyframes float1 { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(30px, -25px) rotate(90deg); } 50% { transform: translate(0, -50px) rotate(180deg); } 75% { transform: translate(-30px, -25px) rotate(270deg); } }
+                        @keyframes float2 { 0%, 100% { transform: translate(0, 0) rotate(180deg); } 25% { transform: translate(-35px, 20px) rotate(225deg); } 50% { transform: translate(0, 40px) rotate(270deg); } 75% { transform: translate(35px, 20px) rotate(315deg); } }
+                        @keyframes float3 { 0%, 100% { transform: translate(0, 0) rotate(45deg); } 25% { transform: translate(25px, 35px) rotate(135deg); } 50% { transform: translate(-20px, 45px) rotate(225deg); } 75% { transform: translate(-25px, 15px) rotate(315deg); } }
+                        @keyframes float4 { 0%, 100% { transform: translate(0, 0) rotate(270deg); } 25% { transform: translate(-25px, -35px) rotate(315deg); } 50% { transform: translate(20px, -45px) rotate(45deg); } 75% { transform: translate(25px, -15px) rotate(135deg); } }
+                        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+                        
+                        .polygon-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
+                        .poly { position: absolute; top: 50%; left: 50%; animation: linear infinite; }
+                        .poly1 { animation-name: float1; animation-duration: 6s; }
+                        .poly2 { animation-name: float2; animation-duration: 7s; }
+                        .poly3 { animation-name: float3; animation-duration: 5s; }
+                        .poly4 { animation-name: float4; animation-duration: 8s; }
+                        svg { filter: drop-shadow(0 4px 8px rgba(107, 83, 68, 0.15)); }
+                    </style>
+                    <div class="polygon-container">
+                        <div class="poly poly1">
+                            <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="40,10 70,30 60,65 20,65 10,30" fill="#A89968" opacity="0.7"/>
+                                <polygon points="40,10 70,30 60,65 20,65 10,30" fill="none" stroke="#6B5344" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        <div class="poly poly2">
+                            <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="35,5 65,25 55,60 15,60 5,25" fill="#8B7355" opacity="0.6"/>
+                                <polygon points="35,5 65,25 55,60 15,60 5,25" fill="none" stroke="#A89968" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        <div class="poly poly3">
+                            <svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="30,10 50,20 45,45 15,45 10,20" fill="#5C6B4D" opacity="0.5"/>
+                                <polygon points="30,10 50,20 45,45 15,45 10,20" fill="none" stroke="#A89968" stroke-width="1"/>
+                            </svg>
+                        </div>
+                        <div class="poly poly4">
+                            <svg width="75" height="75" viewBox="0 0 75 75" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="37,8 62,28 58,62 16,62 12,28" fill="#6B5344" opacity="0.5"/>
+                                <polygon points="37,8 62,28 58,62 16,62 12,28" fill="none" stroke="#A89968" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            `;
+            contentEl.innerHTML = bouncingGraphic;
+        }
+
+        // Get all cards
+        function getAllCards() {
+            let allCards = [];
+            for (const suit in cardData) {
+                allCards = allCards.concat(cardData[suit]);
+            }
+            return allCards;
+        }
+
+        // Search cards
+        function searchCards(query) {
+            if (!query) return getAllCards();
+            const q = query.toLowerCase();
+            return getAllCards().filter(card =>
+                card.name.toLowerCase().includes(q) ||
+                card.keywords.toLowerCase().includes(q)
+            );
+        }
+
+        // Handle autocomplete search
+        function handleSearchInput() {
+            const query = searchInput.value.trim();
+            const suggestionsEl = document.getElementById('suggestions');
+
+            if (query.length === 0) {
+                suggestionsEl.classList.remove('active');
+                return;
+            }
+
+            const results = searchCards(query);
+            if (results.length === 0) {
+                suggestionsEl.classList.remove('active');
+                return;
+            }
+
+            const html = results.map(card => `
+                <div class="suggestion-item" onclick="navigateToCard('${card.id}')">
+                    <span class="suggestion-name">${card.name}</span>
+                    <span class="suggestion-suit">${card.suit}</span>
+                </div>
+            `).join('');
+
+            suggestionsEl.innerHTML = html;
+            suggestionsEl.classList.add('active');
+        }
+
+        // Navigate to a card from autocomplete
+        function navigateToCard(cardId) {
+            window.location.hash = cardId;
+            searchInput.value = '';
+            document.getElementById('suggestions').classList.remove('active');
+        }
+
+        // Handle navigation
+        function handleNavigation() {
+            const hash = window.location.hash.slice(1);
+
+            if (hash) {
+                const card = findCard(hash);
+                if (card) {
+                    renderCardDetail(card);
+                    return;
+                }
+            }
+
+            // Check for active dropdown selections
+            const majorId = majorSelect.value;
+            const cupsId = cupsSelect.value;
+            const swordsId = swordsSelect.value;
+            const wandsId = wandsSelect.value;
+            const pentaclesId = pentaclesSelect.value;
+
+            if (majorId) {
+                window.location.hash = majorId;
+                majorSelect.value = '';
+                return;
+            }
+
+            if (cupsId) {
+                window.location.hash = cupsId;
+                cupsSelect.value = '';
+                return;
+            }
+
+            if (swordsId) {
+                window.location.hash = swordsId;
+                swordsSelect.value = '';
+                return;
+            }
+
+            if (wandsId) {
+                window.location.hash = wandsId;
+                wandsSelect.value = '';
+                return;
+            }
+
+            if (pentaclesId) {
+                window.location.hash = pentaclesId;
+                pentaclesSelect.value = '';
+                return;
+            }
+
+            // Main page: show alchemical circle
+            renderMainPage();
+        }
+
+        // Event listeners
+        majorSelect.addEventListener('change', handleNavigation);
+        cupsSelect.addEventListener('change', handleNavigation);
+        swordsSelect.addEventListener('change', handleNavigation);
+        wandsSelect.addEventListener('change', handleNavigation);
+        pentaclesSelect.addEventListener('change', handleNavigation);
+        searchInput.addEventListener('input', handleSearchInput);
+        window.addEventListener('hashchange', handleNavigation);
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-wrapper')) {
+                document.getElementById('suggestions').classList.remove('active');
+            }
+        });
+
+        // Initialize
+        populateDropdowns();
+        handleNavigation();
+    </script>
+</body>
+</html>
