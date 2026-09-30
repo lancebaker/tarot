@@ -2182,10 +2182,14 @@
             const bouncingGraphic = `
                 <div class="main-graphic">
                     <style>
-                        @keyframes float1 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(0deg); } 25% { transform: translate(-50%, -50%) translate(30px, -25px) rotate(90deg); } 50% { transform: translate(-50%, -50%) translate(0, -50px) rotate(180deg); } 75% { transform: translate(-50%, -50%) translate(-30px, -25px) rotate(270deg); } }
-                        @keyframes float2 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(180deg); } 25% { transform: translate(-50%, -50%) translate(-35px, 20px) rotate(225deg); } 50% { transform: translate(-50%, -50%) translate(0, 40px) rotate(270deg); } 75% { transform: translate(-50%, -50%) translate(35px, 20px) rotate(315deg); } }
-                        @keyframes float3 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(45deg); } 25% { transform: translate(-50%, -50%) translate(25px, 35px) rotate(135deg); } 50% { transform: translate(-50%, -50%) translate(-20px, 45px) rotate(225deg); } 75% { transform: translate(-50%, -50%) translate(-25px, 15px) rotate(315deg); } }
-                        @keyframes float4 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0) rotate(270deg); } 25% { transform: translate(-50%, -50%) translate(-25px, -35px) rotate(315deg); } 50% { transform: translate(-50%, -50%) translate(20px, -45px) rotate(45deg); } 75% { transform: translate(-50%, -50%) translate(25px, -15px) rotate(135deg); } }
+                        @keyframes float1 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0); } 25% { transform: translate(-50%, -50%) translate(30px, -25px); } 50% { transform: translate(-50%, -50%) translate(0, -50px); } 75% { transform: translate(-50%, -50%) translate(-30px, -25px); } }
+                        @keyframes float2 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0); } 25% { transform: translate(-50%, -50%) translate(-35px, 20px); } 50% { transform: translate(-50%, -50%) translate(0, 40px); } 75% { transform: translate(-50%, -50%) translate(35px, 20px); } }
+                        @keyframes float3 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0); } 25% { transform: translate(-50%, -50%) translate(25px, 35px); } 50% { transform: translate(-50%, -50%) translate(-20px, 45px); } 75% { transform: translate(-50%, -50%) translate(-25px, 15px); } }
+                        @keyframes float4 { 0%, 100% { transform: translate(-50%, -50%) translate(0, 0); } 25% { transform: translate(-50%, -50%) translate(-25px, -35px); } 50% { transform: translate(-50%, -50%) translate(20px, -45px); } 75% { transform: translate(-50%, -50%) translate(25px, -15px); } }
+                        @keyframes spin1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                        @keyframes spin2 { from { transform: rotate(180deg); } to { transform: rotate(540deg); } }
+                        @keyframes spin3 { from { transform: rotate(45deg); } to { transform: rotate(405deg); } }
+                        @keyframes spin4 { from { transform: rotate(270deg); } to { transform: rotate(630deg); } }
                         
                         .polygon-container {
                             position: relative;
@@ -2206,7 +2210,7 @@
                             touch-action: none;
                             user-select: none;
                             -webkit-user-select: none;
-                            will-change: transform;
+                            will-change: transform, left, top;
                         }
                         .poly:active, .poly.dragging {
                             cursor: grabbing;
@@ -2214,10 +2218,20 @@
                             animation: none !important;
                             filter: drop-shadow(0 8px 16px rgba(107, 83, 68, 0.35));
                         }
+                        .poly-spin {
+                            display: block;
+                            animation: linear infinite;
+                            transform-origin: center center;
+                            will-change: transform;
+                        }
                         .poly1 { animation-name: float1; animation-duration: 6s; }
                         .poly2 { animation-name: float2; animation-duration: 7s; }
                         .poly3 { animation-name: float3; animation-duration: 5s; }
                         .poly4 { animation-name: float4; animation-duration: 8s; }
+                        .poly1 .poly-spin { animation-name: spin1; animation-duration: 6s; }
+                        .poly2 .poly-spin { animation-name: spin2; animation-duration: 7s; }
+                        .poly3 .poly-spin { animation-name: spin3; animation-duration: 5s; }
+                        .poly4 .poly-spin { animation-name: spin4; animation-duration: 8s; }
                         .poly svg {
                             display: block;
                             pointer-events: none;
@@ -2233,31 +2247,38 @@
                     </style>
                     <div class="polygon-container" id="polyPlayground">
                         <div class="poly poly1" data-poly="1">
-                            <svg width="220" height="220" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="40,10 70,30 60,65 20,65 10,30" fill="#A89968" opacity="0.7"/>
-                                <polygon points="40,10 70,30 60,65 20,65 10,30" fill="none" stroke="#6B5344" stroke-width="1.5"/>
-                            </svg>
+                            <div class="poly-spin">
+                                <svg width="220" height="220" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                    <polygon points="40,10 70,30 60,65 20,65 10,30" fill="#A89968" opacity="0.7"/>
+                                    <polygon points="40,10 70,30 60,65 20,65 10,30" fill="none" stroke="#6B5344" stroke-width="1.5"/>
+                                </svg>
+                            </div>
                         </div>
                         <div class="poly poly2" data-poly="2">
-                            <svg width="200" height="200" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="35,5 65,25 55,60 15,60 5,25" fill="#8B7355" opacity="0.6"/>
-                                <polygon points="35,5 65,25 55,60 15,60 5,25" fill="none" stroke="#A89968" stroke-width="1.5"/>
-                            </svg>
+                            <div class="poly-spin">
+                                <svg width="200" height="200" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+                                    <polygon points="35,5 65,25 55,60 15,60 5,25" fill="#8B7355" opacity="0.6"/>
+                                    <polygon points="35,5 65,25 55,60 15,60 5,25" fill="none" stroke="#A89968" stroke-width="1.5"/>
+                                </svg>
+                            </div>
                         </div>
                         <div class="poly poly3" data-poly="3">
-                            <svg width="180" height="180" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="30,10 50,20 45,45 15,45 10,20" fill="#5C6B4D" opacity="0.5"/>
-                                <polygon points="30,10 50,20 45,45 15,45 10,20" fill="none" stroke="#A89968" stroke-width="1"/>
-                            </svg>
+                            <div class="poly-spin">
+                                <svg width="180" height="180" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                                    <polygon points="30,10 50,20 45,45 15,45 10,20" fill="#5C6B4D" opacity="0.5"/>
+                                    <polygon points="30,10 50,20 45,45 15,45 10,20" fill="none" stroke="#A89968" stroke-width="1"/>
+                                </svg>
+                            </div>
                         </div>
                         <div class="poly poly4" data-poly="4">
-                            <svg width="210" height="210" viewBox="0 0 75 75" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="37,8 62,28 58,62 16,62 12,28" fill="#6B5344" opacity="0.5"/>
-                                <polygon points="37,8 62,28 58,62 16,62 12,28" fill="none" stroke="#A89968" stroke-width="1.5"/>
-                            </svg>
+                            <div class="poly-spin">
+                                <svg width="210" height="210" viewBox="0 0 75 75" xmlns="http://www.w3.org/2000/svg">
+                                    <polygon points="37,8 62,28 58,62 16,62 12,28" fill="#6B5344" opacity="0.5"/>
+                                    <polygon points="37,8 62,28 58,62 16,62 12,28" fill="none" stroke="#A89968" stroke-width="1.5"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                    <p class="poly-hint">Drag the shapes — touch or click</p>
                 </div>
             `;
             contentEl.innerHTML = bouncingGraphic;
@@ -2286,7 +2307,7 @@
                     const pt = getPoint(e);
                     dragging = true;
                     el.classList.add('dragging');
-                    // Capture current visual center relative to container
+                    // Position only — inner .poly-spin keeps rotating
                     const cRect = container.getBoundingClientRect();
                     const eRect = el.getBoundingClientRect();
                     origX = eRect.left + eRect.width / 2 - cRect.left;
@@ -2306,7 +2327,6 @@
                     const cRect = container.getBoundingClientRect();
                     let x = origX + (pt.x - startX);
                     let y = origY + (pt.y - startY);
-                    // Keep roughly inside container
                     x = Math.max(20, Math.min(cRect.width - 20, x));
                     y = Math.max(20, Math.min(cRect.height - 20, y));
                     el.style.left = x + 'px';
@@ -2317,7 +2337,6 @@
                     if (!dragging) return;
                     dragging = false;
                     el.classList.remove('dragging');
-                    // Stay where released (no resume float — feels more intentional)
                 };
 
                 el.addEventListener('pointerdown', onStart);
@@ -2327,7 +2346,6 @@
             });
         }
 
-        // Get all cards
         function getAllCards() {
             let allCards = [];
             for (const suit in cardData) {
