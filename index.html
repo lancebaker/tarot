@@ -370,32 +370,74 @@
         }
 
         .section {
-            margin-bottom: 2.5rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--cream-light);
+            margin-bottom: 0.75rem;
+            padding: 0;
+            border: 1.5px solid var(--cream-light);
+            border-radius: 2px;
+            background: white;
+            overflow: hidden;
         }
 
         .section:last-child {
-            border-bottom: none;
             margin-bottom: 0;
-            padding-bottom: 0;
         }
 
         .section-title {
             font-family: Georgia, serif;
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             color: var(--brown-dark);
-            margin-bottom: 1rem;
+            margin: 0;
             font-weight: 400;
             display: flex;
             align-items: center;
             gap: 0.6rem;
+            list-style: none;
+            cursor: pointer;
+            padding: 0.9rem 1rem;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: background-color 0.15s ease;
+        }
+
+        .section-title::-webkit-details-marker {
+            display: none;
+        }
+
+        .section-title::marker {
+            content: '';
         }
 
         .section-title::before {
             content: '✧';
             color: var(--gold);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .section-title::after {
+            content: '+';
+            margin-left: auto;
+            font-size: 1.25rem;
+            color: var(--wood);
+            font-weight: 300;
+            line-height: 1;
+        }
+
+        details.section[open] > .section-title {
+            border-bottom: 1px solid var(--cream-light);
+            background: var(--cream-light);
+        }
+
+        details.section[open] > .section-title::after {
+            content: '−';
+        }
+
+        .section-title:hover {
+            background: var(--cream-light);
+        }
+
+        .section-body {
+            padding: 1rem 1rem 1.15rem;
         }
 
         .section-content {
@@ -1892,61 +1934,65 @@
                     </div>
                     ` : ''}
 
-                    <div class="section">
-                        <h3 class="section-title">In a 3-Card Spread</h3>
-                        <p class="section-content" style="margin-bottom:0.75rem">Choose a frame you use often. Each position below is written for <strong>${card.name}</strong> in that seat of the spread.</p>
-                        <div class="spread-tools">
-                            <div class="spread-frame-tabs" id="spreadFrameTabs">${frameButtons}</div>
-                            <div id="positionPrompts">${renderPositionPrompts(card, defaultFrame)}</div>
+                    <details class="section">
+                        <summary class="section-title">In a 3-Card Spread</summary>
+                        <div class="section-body">
+                            <p class="section-content" style="margin-bottom:0.75rem">Choose a frame you use often. Each position below is written for <strong>${escapeHtml(card.name)}</strong> in that seat of the spread.</p>
+                            <div class="spread-tools">
+                                <div class="spread-frame-tabs" id="spreadFrameTabs">${frameButtons}</div>
+                                <div id="positionPrompts">${renderPositionPrompts(card, defaultFrame)}</div>
+                            </div>
                         </div>
-                    </div>
+                    </details>
 
                     ${card.traditional ? `
-                    <div class="section">
-                        <h3 class="section-title">Traditional Meaning</h3>
-                        ${formatSectionHtml(card.traditional)}
-                    </div>
+                    <details class="section">
+                        <summary class="section-title">Traditional Meaning</summary>
+                        <div class="section-body">${formatSectionHtml(card.traditional)}</div>
+                    </details>
                     ` : ''}
 
                     ${card.jungian ? `
-                    <div class="section">
-                        <h3 class="section-title">Jungian Perspective</h3>
-                        ${formatSectionHtml(card.jungian)}
-                    </div>
+                    <details class="section">
+                        <summary class="section-title">Jungian Perspective</summary>
+                        <div class="section-body">${formatSectionHtml(card.jungian)}</div>
+                    </details>
                     ` : ''}
 
                     ${card.shadow ? `
-                    <div class="section">
-                        <h3 class="section-title">Shadow Aspect</h3>
-                        ${formatSectionHtml(card.shadow)}
-                    </div>
+                    <details class="section">
+                        <summary class="section-title">Shadow Aspect</summary>
+                        <div class="section-body">${formatSectionHtml(card.shadow)}</div>
+                    </details>
                     ` : ''}
 
                     ${card.reversed ? `
-                    <div class="section">
-                        <h3 class="section-title">Reversed</h3>
-                        <div class="reversal-toggle-row">
-                            <button type="button" class="active" id="btnUprightView">Upright context</button>
-                            <button type="button" id="btnReversedView">Focus reversed</button>
+                    <details class="section">
+                        <summary class="section-title">Reversed</summary>
+                        <div class="section-body">
+                            <div class="reversal-toggle-row">
+                                <button type="button" class="active" id="btnUprightView">Upright context</button>
+                                <button type="button" id="btnReversedView">Focus reversed</button>
+                            </div>
+                            <div id="reversedSectionBody">
+                                ${formatSectionHtml(card.reversed)}
+                            </div>
                         </div>
-                        <div id="reversedSectionBody">
-                            ${formatSectionHtml(card.reversed)}
-                        </div>
-                    </div>
+                    </details>
                     ` : ''}
 
                     ${card.integration ? `
-                    <div class="section">
-                        <h3 class="section-title">Integration & Wholeness</h3>
-                        ${formatSectionHtml(card.integration)}
-                    </div>
+                    <details class="section">
+                        <summary class="section-title">Integration &amp; Wholeness</summary>
+                        <div class="section-body">${formatSectionHtml(card.integration)}</div>
+                    </details>
                     ` : ''}
 
                     ${card.howToUse ? `
-                    <div class="section">
-                        <h3 class="section-title">How to Work With This Card in a Spread</h3>
-                        ${formatSectionHtml(card.howToUse, { isSpread: true })}
-                    </div>
+                    <details class="section">
+                        <summary class="section-title">How to Work With This Card in a Spread</summary>
+                        <div class="section-body">${formatSectionHtml(card.howToUse, { isSpread: true })}</div>
+                    </details>
                     ` : ''}
                 </div>
             `;
